@@ -97,7 +97,12 @@ DFS* preencher_dfs(const char *arquivo){
         }
     }
 
-    printf("U = {%s}\n", dfs->u);
+    printf("U = {");
+    for(size_t i = 0; i < strlen(dfs->u); i++){
+        if(i == strlen(dfs->u)-1) printf("%c}\n", dfs->u[i]);
+        else printf("%c,", dfs->u[i]);
+    } 
+
     printf("F = {");
     for(int i = 0; i < dfs->tam_f; i++){
         if(i == dfs->tam_f - 1) printf("%s->%s}\n", dfs->f[i].lhs, dfs->f[i].rhs);
