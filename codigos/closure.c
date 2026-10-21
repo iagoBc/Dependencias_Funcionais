@@ -6,9 +6,14 @@ void closure(DFS *dfs, const char *atrib_x){
     char fecho[strlen(dfs->u) + 1];
     strcpy(fecho, atrib_x);                         // Inicializa o fecho com os atributos fornecidos
 
-    for(int i = 0; i < dfs->tam_f; i++){
-        if(strstr(fecho, dfs->f[i].lhs) != NULL && strstr(fecho, dfs->f[i].rhs) == NULL)
-            strcat(fecho, dfs->f[i].rhs);           // Se o lado esquerdo da dependência funcional estiver no fecho e o lado direito não estiver, adiciona o lado direito ao fecho
+    Depend_func *dependencia = queue_head(dfs->f);
+    while(dependencia != NULL){
+        if(strstr(fecho, dependencia->lhs) != NULL &&
+           strstr(fecho, dependencia->rhs) == NULL) {
+            strcat(fecho, dependencia->rhs);
+        }
+
+        dependencia = queue_next(dfs->f);
     }
 
     printf("%s\n", fecho);
