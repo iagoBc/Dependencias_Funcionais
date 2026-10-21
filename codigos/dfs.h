@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-
+#include "queue.h"
 
 typedef struct {
     char *lhs;          // Lado esquerdo (Left-Hand Side), ex: "A", "BD"
@@ -12,7 +12,7 @@ typedef struct {
 
 typedef struct {
     char *u;              // Universo de atributos, ex: "ABCDE"
-    Depend_func *f;       // Array dinâmico de dependências funcionais
+    queue_t *f;       // Fila de dependências funcionais
     int tam_f;         // 2. ESSENCIAL: Quantidade de regras cadastradas no array 'f'
 } DFS;
 

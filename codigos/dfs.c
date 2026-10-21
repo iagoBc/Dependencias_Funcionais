@@ -19,6 +19,7 @@ void remover_espacos(char *texto) {
     *destino = '\0';
 }
 
+
 // Função para preencher a estrutura DFS a partir de um arquivo
 DFS* preencher_dfs(const char *arquivo){
     FILE *fp = fopen(arquivo, "r");
@@ -77,7 +78,7 @@ DFS* preencher_dfs(const char *arquivo){
 
             if(*(abre + 1) != '\0') dfs->tam_f++;                     // Incrementa a contagem se houver pelo menos uma dependência funcional
 
-            dfs->f = malloc((size_t)dfs->tam_f * sizeof(*dfs->f));
+            dfs->f = queue_create();
             if(dfs->f == NULL){
                 fclose(fp);
                 free(dfs);
@@ -89,26 +90,42 @@ DFS* preencher_dfs(const char *arquivo){
             for(int i = 0; i < dfs->tam_f && dependencias[i] != NULL; i++){
                 if(i+1 < dfs->tam_f) dependencias[i+1] = strtok(NULL, ",;}");
             }
-            
-            for(int i = 0; i < dfs->tam_f; i++){                        // Divide cada dependência funcional em lado esquerdo (lhs) e lado direito (rhs) usando "->" como delimitador
-                dfs->f[i].lhs = strtok(dependencias[i], "->");
-                dfs->f[i].rhs = strtok(NULL, "->");
-            }            
+
+            for(int i = 0; i < dfs->tam_f; i++){
+                Depend_func *df = malloc(sizeof(*df));                  // Aloca memória para uma nova dependência funcional
+
+                if(df == NULL){
+                    fclose(fp);
+                    free(dfs);
+                    return NULL;
+                }
+
+                df->lhs = strtok(dependencias[i], "->");
+                df->rhs = strtok(NULL, "->");
+                queue_add(dfs->f, df);                                  // Adiciona a dependência funcional à fila de dependências funcionais
+            }              
         }
     }
 
+    // Imprime o universo de atributos armazenado na estrutura DFS
     printf("U = {");
     for(size_t i = 0; i < strlen(dfs->u); i++){
         if(i == strlen(dfs->u)-1) printf("%c}\n", dfs->u[i]);
         else printf("%c,", dfs->u[i]);
     } 
 
+    // Imprime as dependências funcionais armazenadas na fila
     printf("F = {");
-    for(int i = 0; i < dfs->tam_f; i++){
-        if(i == dfs->tam_f - 1) printf("%s->%s}\n", dfs->f[i].lhs, dfs->f[i].rhs);
+    Depend_func *df = queue_head(dfs->f);
+    int primeira = 1;
 
-        else printf("%s->%s, ", dfs->f[i].lhs, dfs->f[i].rhs);
+    while(df != NULL){
+        if(!primeira) printf(", ");
+        printf("%s->%s", df->lhs, df->rhs);
+        primeira = 0;
+        df = queue_next(dfs->f);
     }
+    printf("}\n");
 
     fclose(fp);
     return dfs;

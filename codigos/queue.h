@@ -23,9 +23,6 @@ typedef struct queue_t{
     int tam;
 } queue_t;
 
-// struct que representa uma fila; este é um struct "opaco",
-// que deve ser redefinido completamente em queue.c
-typedef struct queue_t queue_t;
 
 // Cria uma fila inicialmente vazia.
 // Retorno: ponteiro p/ a nova fila
