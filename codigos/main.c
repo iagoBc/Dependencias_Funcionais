@@ -2,6 +2,7 @@
 #include <string.h>
 #include "closure.h"
 #include "dfs.h"
+#include "mincover.h"
 
 int main(int argc, char *argv[]) {
     // 2. Verifica se o usuário digitou argumentos suficientes
@@ -12,19 +13,25 @@ int main(int argc, char *argv[]) {
 
     DFS *dfs = preencher_dfs(argv[3]);
     
-    if(!strcmp(argv[1], "closure")) {
-        // 4. Se for "closure", chama a função calcular_closure com os argumentos apropriados
-        if(argc < 5) {
+    if(!strcmp(argv[1], "closure")){
+        if(argc < 5){
             printf("Uso: fdtool closure --fds <arquivo_fds> --X <atributos_X>\n");
             return 1;
         }
+
         closure(dfs, argv[5]);
     } 
     
-    else {
-        printf("Comando desconhecido: %s\n", argv[1]);
+    else if(!strcmp(argv[1], "mincover")){
+        if(argc < 3){
+            printf("Uso: fdtool mincover --fds <arquivo_fds>\n");
+            return 1;
+        }
+
+        mincover(dfs);
     }
 
-
+    else printf("Comando desconhecido: %s\n", argv[1]);
+    
     return 0;
 }
