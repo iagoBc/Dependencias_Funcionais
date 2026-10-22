@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        closure(dfs, argv[5]);
+        printf("%s\n", closure(dfs, argv[5]));
     } 
     
     else if(!strcmp(argv[1], "mincover")){
