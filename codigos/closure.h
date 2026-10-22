@@ -2,8 +2,6 @@
 #define CLOSURE_H
 
 #include "dfs.h"
-#include <stdio.h>
-#include <string.h>
 
 
 // Função para calcular o fecho de um conjunto de atributos 

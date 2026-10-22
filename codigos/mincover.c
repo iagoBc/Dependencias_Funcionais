@@ -15,7 +15,7 @@ int mincover(DFS *dfs){
                     return 1;
                 }
                 new_df->lhs = df->lhs;
-                new_df->rhs = malloc(2);                                // Aloca memória para o lado direito da nova dependência funcional (1 caractere + '\0')
+                new_df->rhs = malloc(2);                
                 new_df->rhs[0] = df->rhs[i];
                 new_df->rhs[1] = '\0';                                  
                 queue_add(dfs->f, new_df);                              // Adiciona a nova dependência funcional à fila de dependências funcionais
@@ -30,9 +30,9 @@ int mincover(DFS *dfs){
     while(df != NULL){
         if(strlen(df->lhs) > 1){                                        // Se o lado esquerdo da dependência funcional tiver mais de um atributo, verifica se algum deles é desnecessário
             for(size_t i = 0; i < strlen(df->lhs); i++){
-                char atrib_x[2] = {df->lhs[i], '\0'};                   // Cria uma string temporária com o atributo atual do lado esquerdo
+                char atrib_x[2] = {df->lhs[i], '\0'};                  
                 char *fecho = closure(dfs, atrib_x);                    // Calcula o fecho do atributo atual usando as dependências funcionais restantes na fila
-                if(strstr(fecho, df->rhs) != NULL){ 
+                if(strstr(fecho, df->rhs) != NULL){                     // Se o fecho do atributo atual contiver o lado direito da dependência funcional, significa que o atributo é desnecessário
                     df->lhs = atrib_x;
                     break;
                 }
@@ -55,11 +55,12 @@ int mincover(DFS *dfs){
         free(fecho);
     }
 
+    // Imprime as dependências funcionais restantes na fila após a execução da função mincover
     df = queue_head(dfs->f);
     while(df != NULL){
         printf("%s->%s\n", df->lhs, df->rhs);
         df = queue_next(dfs->f);
     }
 
-    return 0;                                                           // Retorna 0 para indicar sucesso na execução da função
+    return 0;                                                           
 }
