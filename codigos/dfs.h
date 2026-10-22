@@ -5,10 +5,12 @@
 #include <string.h>
 #include "queue.h"
 
+
 typedef struct {
     char *lhs;          // Lado esquerdo (Left-Hand Side), ex: "A", "BD"
     char *rhs;          // Lado direito (Right-Hand Side), ex: "BC", "E"
 } Depend_func;
+
 
 typedef struct {
     char *u;              // Universo de atributos, ex: "ABCDE"
@@ -16,6 +18,8 @@ typedef struct {
     int tam_f;         // 2. ESSENCIAL: Quantidade de regras cadastradas no array 'f'
 } DFS;
 
+
 DFS* preencher_dfs(const char *arquivo);
+
 
 #endif // DFS_H
