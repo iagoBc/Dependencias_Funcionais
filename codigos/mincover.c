@@ -12,7 +12,7 @@ int mincover(DFS *dfs){
                 Depend_func *new_df = malloc(sizeof(*new_df));          
                 if(new_df == NULL){
                     free(df);
-                    return 1;
+                    return ERROR;
                 }
                 new_df->lhs = df->lhs;
                 new_df->rhs = malloc(2);                
@@ -62,5 +62,5 @@ int mincover(DFS *dfs){
         df = queue_next(dfs->f);
     }
 
-    return 0;                                                           
+    return NOERROR;                                                           
 }
