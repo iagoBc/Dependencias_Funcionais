@@ -1,7 +1,4 @@
-
 #include "queue.h"
-
-
 
 struct queue_t *queue_create(){
     queue_t *fila = (queue_t*) malloc(sizeof(queue_t)); // Aloca dinamicamente memoria para struct

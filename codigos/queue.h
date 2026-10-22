@@ -67,19 +67,4 @@ void *queue_head(struct queue_t *queue);
 //          NULL se a fila estiver vazia ou não existir
 void *queue_next(struct queue_t *queue);
 
-// Informa o item atualmente sob o iterador na fila.
-// Retorno: ptr para o item apontado pelo iterador
-//          NULL se a fila estiver vazia ou não existir
-//          NULL se o iterador passou do fim da fila
-void *queue_item(struct queue_t *queue);
-
-// Imprime os elementos de uma fila; a função externa "func"
-// deve ser chamada para imprimir cada item.
-// Exemplos de saída, com name == "Frutas":
-// Frutas: [ banana pera ameixa uva ] (4 items)
-// Frutas: [ ] (0 items)
-// Frutas: undef   se queue == NULL
-// Frutas: [ undef undef undef ] (3 items)  se func == NULL
-void queue_print(char *name, struct queue_t *queue, void(func)(void *));
-
 #endif
