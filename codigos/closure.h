@@ -4,6 +4,6 @@
 #include "dfs.h"
 #include <stdio.h>
 
-void closure(DFS *dfs, const char *atrib_x);
+char* closure(DFS *dfs, const char *atrib_x);
 
 #endif // CLOSURE_H
