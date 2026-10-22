@@ -31,7 +31,12 @@ int main(int argc, char *argv[]) {
         mincover(dfs);
     }
 
+
     else printf("Comando desconhecido: %s\n", argv[1]);
+    
+    queue_destroy(dfs->f);
+    free(dfs->u);
+    free(dfs);
     
     return 0;
 }
