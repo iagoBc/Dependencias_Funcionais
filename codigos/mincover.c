@@ -1,7 +1,8 @@
 #include "mincover.h"
 #include "closure.h"
 
-void mincover(DFS *dfs){
+// Função para calcular a cobertura mínima das dependências funcionais
+int mincover(DFS *dfs){
     Depend_func *df = queue_head(dfs->f);
 
     // 1. Possuir apenas um atributo no lado direito de cada dependência
@@ -11,7 +12,7 @@ void mincover(DFS *dfs){
                 Depend_func *new_df = malloc(sizeof(*new_df));          
                 if(new_df == NULL){
                     free(df);
-                    return;
+                    return 1;
                 }
                 new_df->lhs = df->lhs;
                 new_df->rhs = malloc(2);                                // Aloca memória para o lado direito da nova dependência funcional (1 caractere + '\0')
@@ -59,4 +60,6 @@ void mincover(DFS *dfs){
         printf("%s->%s\n", df->lhs, df->rhs);
         df = queue_next(dfs->f);
     }
+
+    return 0;                                                           // Retorna 0 para indicar sucesso na execução da função
 }

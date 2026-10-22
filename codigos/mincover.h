@@ -4,6 +4,7 @@
 #include "dfs.h"
 #include <stdio.h>
 
-void mincover(DFS *dfs);
+// Função para calcular a cobertura mínima de um conjunto de dependências funcionais
+int mincover(DFS *dfs);
 
 #endif // MINCOVER_H
