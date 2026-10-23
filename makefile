@@ -1,5 +1,5 @@
 # PROGRAMA
-    PROG = ftdool
+    PROG = fdtool
 
 # arquivos a compilar
 	HDR = $(wildcard codigos/*.h)			# headers
