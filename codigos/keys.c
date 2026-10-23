@@ -1,0 +1,58 @@
+#include "keys.h"
+
+// Função auxiliar para verificar se todos os atributos do lado esquerdo estão presentes no fecho
+int contem_parte(char *maior, char *menor){
+    for(int i = 0; menor[i] != '\0'; i++)
+        if(!strchr(maior, menor[i])) return 0;                                    // Retorna falso se faltar alguma letra
+        
+    return 1;                                                                   // Verdadeiro se todas estiverem no fecho
+}
+
+int keys(DFS *dfs){
+    char *chaves[100];
+    int pos = 0;
+    int tam_u = strlen(dfs->u);
+
+    long long num_combinacoes = 1LL << tam_u;                                                   // Calcula o número total de combinações possíveis de chaves candidatas 2 ^ tam_u
+
+    for(long long i = 1; i < num_combinacoes; i++){
+        char *combinacao = malloc(tam_u + 1);                                                                 // Aloca memória para a combinação atual
+        if(combinacao == NULL){
+            fprintf(stderr, "Erro ao alocar memória para a combinação.\n");
+            return ERROR;
+        }
+
+        int index = 0;
+        for(int j = 0; j < tam_u; j++)
+            if(i & (1LL << j)) combinacao[index++] = dfs->u[j];                                 // Adiciona o atributo correspondente à combinação atual
+            
+        combinacao[index] = '\0';
+
+        for(int j = 0; j < pos; j++){
+            if(contem_parte(combinacao, chaves[j])){                                         // Se a combinação atual contiver uma chave candidata já encontrada, ela não é uma chave candidata
+                free(combinacao);
+                combinacao = NULL;
+                break;
+            }
+        }
+
+        if(combinacao == NULL) continue;
+
+        char *fecho = closure(dfs, combinacao);
+        if(fecho == NULL){
+            fprintf(stderr, "Erro ao calcular o fecho da combinação %s.\n", combinacao);
+            free(combinacao);
+            return ERROR;
+        }
+
+        if(contem_todos(fecho, dfs->u)) chaves[pos++] = combinacao;
+        
+        else free(combinacao);
+        
+        free(fecho);
+    }
+    
+    for(int i = 0; i < pos; i++) printf("%s\n", chaves[i]);
+    
+    return NOERROR;
+}
