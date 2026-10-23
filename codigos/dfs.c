@@ -2,6 +2,16 @@
 #include <ctype.h>
 #include <stdio.h>
 
+static char *duplicar_string(const char *origem) {
+    size_t tamanho = strlen(origem) + 1;
+    char *copia = malloc(tamanho);
+
+    if (copia != NULL) {
+        memcpy(copia, origem, tamanho);
+    }
+
+    return copia;
+}
 
 // Função para remover espaços em branco de uma string
 void remover_espacos(char *texto){
@@ -103,9 +113,24 @@ DFS* preencher_dfs(const char *arquivo){
                     return NULL;
                 }
 
-                df->lhs = strtok(dependencias[i], "->");                            // Separa o lado esquerdo da dependência funcional usando "->" como delimitador
-                df->rhs = strtok(NULL, "->");                                       // Separa o lado direito da dependência funcional usando "->" como delimitador
-                queue_add(dfs->f, df);                                              // Adiciona a dependência funcional à fila de dependências funcionais
+                char *lhs = strtok(dependencias[i], "->");
+                char *rhs = strtok(NULL, "->");
+                if (lhs == NULL || rhs == NULL) {
+                    free(df);
+                    fclose(fp);
+                    return NULL;
+                }
+
+                df->lhs = duplicar_string(lhs);
+                df->rhs = duplicar_string(rhs);
+                if (df->lhs == NULL || df->rhs == NULL ||
+                    queue_add(dfs->f, df) != NOERROR) {
+                    free(df->lhs);
+                    free(df->rhs);
+                    free(df);
+                    fclose(fp);
+                    return NULL;
+                }
             } 
         }
     }

@@ -44,7 +44,7 @@ int mincover(DFS *dfs){
     }
     
     // 3. Não possuir dependências redundantes
-    for(int i = 0; i < queue_size(dfs->f); i++){
+    for(int i = 0; i < dfs->tam_f; i++){
         Depend_func *df = queue_head(dfs->f);
         queue_del(dfs->f, df);                                          // Remove o primeiro elemento da fila para testá-lo
         
