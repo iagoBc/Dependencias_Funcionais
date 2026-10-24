@@ -3,8 +3,9 @@
 
 #include "dfs.h"
 #include "closure.h"
+#include "queue.h"
 
 // Função para calcular chaves candidatas de um conjunto de dependências funcionais
-int keys(DFS *dfs);
+queue_t* keys(DFS *dfs);
 
 #endif // KEYS_H

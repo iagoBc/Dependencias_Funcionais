@@ -2,6 +2,7 @@
 #include "dfs.h"
 #include "mincover.h"
 #include "keys.h"
+#include "normalform.h"
 
 
 int main(int argc, char *argv[]) {
@@ -53,16 +54,21 @@ int main(int argc, char *argv[]) {
     }
 
     else if(strcmp(argv[1], "keys") == 0){
-        if(keys(dfs) != NOERROR){
+        queue_t* chaves = keys(dfs);
+        if(chaves == NULL){
             fprintf(stderr, "Erro ao calcular as chaves candidatas.\n");
             status = ERROR;
-        }
+        } 
+        else free(chaves);
+        
     }
 
     else if(strcmp(argv[1], "normalform") == 0){
         // Implementação da funcionalidade de normalform
-        fprintf(stderr, "Funcionalidade de normalform ainda não implementada.\n");
-        status = ERROR;
+        if(normalform(dfs) != NOERROR) {
+            fprintf(stderr, "Erro ao calcular a forma normal.\n");
+            status = ERROR;
+        }
     }
 
     return status;

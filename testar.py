@@ -66,7 +66,8 @@ def main():
         # Adiciona os testes fixos
         comandos = [
             ("MINCOVER", [APP, "mincover", "--fds", arquivo]),
-            ("KEYS", [APP, "keys", "--fds", arquivo])
+            ("KEYS", [APP, "keys", "--fds", arquivo]),
+            ("NORMALFORM", [APP, "normalform", "--fds", arquivo])
         ]
 
         # Extrai os atributos do ficheiro e gera um teste de fecho para cada um

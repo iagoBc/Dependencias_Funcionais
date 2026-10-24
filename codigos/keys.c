@@ -8,8 +8,8 @@ int contem_parte(char *maior, char *menor){
     return 1;                                                                   // Verdadeiro se todas estiverem no fecho
 }
 
-int keys(DFS *dfs){
-    char *chaves[100];
+queue_t* keys(DFS *dfs){
+    queue_t *chaves = queue_create();                       
     int pos = 0;
     int tam_u = strlen(dfs->u);
 
@@ -19,7 +19,7 @@ int keys(DFS *dfs){
         char *combinacao = malloc(tam_u + 1);                                                                 // Aloca memória para a combinação atual
         if(combinacao == NULL){
             fprintf(stderr, "Erro ao alocar memória para a combinação.\n");
-            return ERROR;
+            return NULL;
         }
 
         int index = 0;
@@ -27,13 +27,15 @@ int keys(DFS *dfs){
             if(i & (1LL << j)) combinacao[index++] = dfs->u[j];                                 // Adiciona o atributo correspondente à combinação atual
             
         combinacao[index] = '\0';
+        char *chave = queue_head(chaves);
 
         for(int j = 0; j < pos; j++){
-            if(contem_parte(combinacao, chaves[j])){                                         // Se a combinação atual contiver uma chave candidata já encontrada, ela não é uma chave candidata
+            if(contem_parte(combinacao, chave)){                                         // Se a combinação atual contiver uma chave candidata já encontrada, ela não é uma chave candidata
                 free(combinacao);
                 combinacao = NULL;
                 break;
             }
+            chave = queue_next(chaves);
         }
 
         if(combinacao == NULL) continue;
@@ -42,17 +44,25 @@ int keys(DFS *dfs){
         if(fecho == NULL){
             fprintf(stderr, "Erro ao calcular o fecho da combinação %s.\n", combinacao);
             free(combinacao);
-            return ERROR;
+            return NULL;
         }
 
-        if(contem_todos(fecho, dfs->u)) chaves[pos++] = combinacao;
+        if(contem_todos(fecho, dfs->u)){
+            queue_add(chaves, combinacao);
+            pos++;
+        }
         
         else free(combinacao);
         
         free(fecho);
     }
-    
-    for(int i = 0; i < pos; i++) printf("%s\n", chaves[i]);
-    
-    return NOERROR;
+
+
+    char* chave = queue_head(chaves);
+    for(int i = 0; i < queue_size(chaves); i++){
+        printf("%s\n", chave);
+        chave = queue_next(chaves);
+    }
+
+    return chaves;
 }
