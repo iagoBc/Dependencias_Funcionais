@@ -53,15 +53,7 @@ queue_t* keys(DFS *dfs){
         }
         
         else free(combinacao);
-        
         free(fecho);
-    }
-
-
-    char* chave = queue_head(chaves);
-    for(int i = 0; i < queue_size(chaves); i++){
-        printf("%s\n", chave);
-        chave = queue_next(chaves);
     }
 
     return chaves;

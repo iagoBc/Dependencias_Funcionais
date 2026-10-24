@@ -59,7 +59,14 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "Erro ao calcular as chaves candidatas.\n");
             status = ERROR;
         } 
-        else free(chaves);
+        else{
+            char* chave = queue_head(chaves);
+            for(int i = 0; i < queue_size(chaves); i++){
+                printf("%s\n", chave);
+                chave = queue_next(chaves);
+            }
+            free(chaves);
+        } 
         
     }
 
