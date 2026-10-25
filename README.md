@@ -33,7 +33,7 @@ sudo apt install build-essential
 Clone o repositório e entre na pasta que contém o `makefile`:
 
 ```bash
-git clone <URL-DO-REPOSITORIO>
+git clone https://github.com/iagoBc/BD
 cd BD
 ```
 
@@ -91,7 +91,7 @@ Exemplo:
 
 ```text
 U = {A,B,C,D,E}
-F = { A -> BC, C -> D, BD -> E }
+F = { A->BC, C->D, BD->E }
 ```
 
 ### Universo de atributos
