@@ -8,8 +8,8 @@
 char* closure(DFS *dfs, const char *atrib_x);
 
 
-// Função para verificar se o fecho contém todos os atributos do universo
-int contem_todos(const char *fecho, const char *atributos);
+// Função para verificar se as letras do conjunto 'menor' estão todas presentes no conjunto 'maior'
+int contem_todos(const char *maior, const char *menor);
 
 
 #endif // CLOSURE_H

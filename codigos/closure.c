@@ -2,10 +2,10 @@
 #include "dfs.h"
 
 
-// Função auxiliar para verificar se todos os atributos do lado esquerdo estão presentes no fecho
-int contem_todos(const char *fecho, const char *lhs){
-    for(int i = 0; lhs[i] != '\0'; i++)
-        if(!strchr(fecho, lhs[i])) return 0;                                    // Retorna falso se faltar alguma letra
+// Função para verificar se as letras do conjunto 'menor' estão todas presentes no conjunto 'maior'
+int contem_todos(const char *maior, const char *menor){
+    for(int i = 0; menor[i] != '\0'; i++)
+        if(!strchr(maior, menor[i])) return 0;                                    // Retorna falso se faltar alguma letra
         
     return 1;                                                                   // Verdadeiro se todas estiverem no fecho
 }

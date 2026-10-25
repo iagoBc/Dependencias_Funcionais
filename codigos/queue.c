@@ -99,5 +99,5 @@ void *queue_next(struct queue_t *queue){
     queue->it = queue->it->prox;                                                // Avanca o iterador ao proximo no da fila
     if (!queue->it) return NULL;                                                // Se o proximo no == NULL
 
-    return queue->it->dado; // Retorna para o item apontado pelo iterador
+    return queue->it->dado;                                                     // Retorna para o item apontado pelo iterador
 }
