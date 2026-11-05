@@ -29,7 +29,29 @@ int normalform(DFS *dfs){
         chave = queue_next(chaves);
     }
     
+    int geral_viola_bcnf = 0;
+    int geral_viola_3fn = 0;
+
+    // Primeiro loop: apenas verifica
     No *no = dfs->f->head;
+
+    while(no != NULL){
+        Depend_func *df = no->dado;
+        char *fecho = closure(dfs, df->lhs);
+
+        if(!contem_todos(fecho, dfs->u)){                                                        // Verifica BCNF: o LHS é superchave? 
+            geral_viola_bcnf = 1;
+            if(!contem_parte(primos, df->rhs)) geral_viola_3fn = 1;                              // Verifica 3FN no RHS (Lado Direito): todos os atributos do RHS são primos?
+        }
+
+        free(fecho);
+        no = no->prox;
+    }
+
+    if(geral_viola_bcnf) printf("BCNF: VIOLATIONS\n");
+    if(geral_viola_3fn) printf("3FN: VIOLATIONS\n");
+
+    no = dfs->f->head;
     while(no != NULL){
         Depend_func *df = no->dado;
         char *fecho = closure(dfs, df->lhs);
@@ -42,8 +64,6 @@ int normalform(DFS *dfs){
             if(!contem_parte(primos, df->rhs)) regra_viola_3fn = 1;                               // Verifica 3FN no RHS (Lado Direito): todos os atributos do RHS são primos?
         } 
         
-        if(regra_viola_bcnf) printf("BCNF: VIOLATIONS\n");
-        if(regra_viola_3fn) printf("3FN: VIOLATIONS\n");
         if(regra_viola_bcnf) printf("VIOLATION BCNF: %s->%s (%s not superkey)\n", df->lhs, df->rhs, df->lhs);
         if(regra_viola_3fn) printf("VIOLATION 3NF: %s->%s (%s not prime, %s not superkey)\n", df->lhs, df->rhs, df->rhs, df->lhs);
     
