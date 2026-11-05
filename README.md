@@ -33,8 +33,8 @@ sudo apt install build-essential
 Clone o repositório e entre na pasta que contém o `makefile`:
 
 ```bash
-git clone https://github.com/iagoBc/BD
-cd BD
+git clone https://github.com/iagoBc/Dependencias_Funcionais.git
+cd Dependencias_Funcionais
 ```
 
 Todos os comandos deste README devem ser executados a partir da raiz do
