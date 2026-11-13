@@ -1,11 +1,10 @@
 #include "mincover.h"
 #include "closure.h"
 
-// Função para calcular a cobertura mínima das dependências funcionais
-int mincover(DFS *dfs){
-    Depend_func *df = queue_head(dfs->f);
 
-    // 1. Possuir apenas um atributo no lado direito de cada dependência
+// Função para decompor o lado direito das dependências funcionais em dependências unitárias
+int decompor_rhs(DFS *dfs){
+    Depend_func *df = queue_head(dfs->f);
     while(df != NULL){
         if(strlen(df->rhs) > 1){                                        // Se o lado direito da dependência funcional tiver mais de um atributo, cria novas dependências funcionais para cada atributo do lado direito
             for(size_t i = 0; i < strlen(df->rhs); i++){
@@ -25,8 +24,16 @@ int mincover(DFS *dfs){
         df = queue_next(dfs->f);
     }
 
+    return NOERROR;
+}
+
+
+// Função para calcular a cobertura mínima das dependências funcionais
+int mincover(DFS *dfs){
+    if(decompor_rhs(dfs) != NOERROR) return ERROR;                      // 1. Decompor o lado direito das dependências funcionais em dependências unitárias
+
     // 2. Não possuir atributos desnecessários nas dependências
-    df = queue_head(dfs->f);
+    Depend_func *df = queue_head(dfs->f);
     while(df != NULL){
         if(strlen(df->lhs) > 1){                                        // Se o lado esquerdo da dependência funcional tiver mais de um atributo, verifica se algum deles é desnecessário
             for(size_t i = 0; i < strlen(df->lhs); i++){
@@ -53,13 +60,6 @@ int mincover(DFS *dfs){
         
         else queue_add(dfs->f, df);                                     // Essencial: Adiciona a regra de volta (ela irá para o final da fila).
         free(fecho);
-    }
-
-    // Imprime as dependências funcionais restantes na fila após a execução da função mincover
-    df = queue_head(dfs->f);
-    while(df != NULL){
-        printf("%s->%s\n", df->lhs, df->rhs);
-        df = queue_next(dfs->f);
     }
 
     return NOERROR;                                                           
