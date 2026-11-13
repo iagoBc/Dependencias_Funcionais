@@ -1,17 +1,18 @@
 #include "dfs.h"
-#include <ctype.h>
-#include <stdio.h>
 
+
+// Função auxiliar para duplicar uma string
 static char *duplicar_string(const char *origem) {
     size_t tamanho = strlen(origem) + 1;
     char *copia = malloc(tamanho);
 
-    if (copia != NULL) {
+    if(copia != NULL){                                                                  // Se a alocação de memória for bem-sucedida, copia o conteúdo da string de origem para a cópia
         memcpy(copia, origem, tamanho);
     }
 
     return copia;
 }
+
 
 // Função para remover espaços em branco de uma string
 void remover_espacos(char *texto){
@@ -19,7 +20,7 @@ void remover_espacos(char *texto){
     char *destino = texto;
 
     while(*origem != '\0'){
-        if(!isspace((unsigned char)*origem)){                                       // Se o caractere atual não for um espaço em branco, copia-o para a posição de destino
+        if(!isspace((unsigned char)*origem)){                                           // Se o caractere atual não for um espaço em branco, copia-o para a posição de destino
             *destino = *origem;
             destino++;                                                  
         }
@@ -33,13 +34,13 @@ void remover_espacos(char *texto){
 // Função para preencher a estrutura DFS a partir de um arquivo
 DFS* preencher_dfs(const char *arquivo){
     FILE *fp = fopen(arquivo, "r");
-    if(fp == NULL){
+    if(!fp){
         perror(arquivo);
         return NULL;
     } 
 
     DFS *dfs = malloc(sizeof(*dfs));
-    if(dfs == NULL){
+    if(!dfs){
         fclose(fp);
         return NULL;
     }
@@ -65,7 +66,7 @@ DFS* preencher_dfs(const char *arquivo){
             
 
             dfs->u = malloc(quantidade + 1);                                        // Aloca memória para o universo de atributos, incluindo espaço para o caractere nulo
-            if(dfs->u == NULL){
+            if(!dfs->u){
                 fclose(fp);
                 free(dfs);
                 return NULL;
@@ -86,19 +87,19 @@ DFS* preencher_dfs(const char *arquivo){
 
             dfs->tam_f = 0;
             for(char *p = abre + 1; *p != '\0'; p++) 
-                if(*p == ',' || *p == ';') dfs->tam_f++;                            // Conta a quantidade de dependências funcionais entre '{' e '}'
+                if(*p == ',' || *p == ';') dfs->tam_f++;                                // Conta a quantidade de dependências funcionais entre '{' e '}'
             
 
-            if(*(abre + 1) != '\0') dfs->tam_f++;                                   // Incrementa a contagem se houver pelo menos uma dependência funcional
+            if(*(abre + 1) != '\0') dfs->tam_f++;                                       // Incrementa a contagem se houver pelo menos uma dependência funcional
 
             dfs->f = queue_create();
-            if(dfs->f == NULL){
+            if(!dfs->f){
                 fclose(fp);
                 free(dfs);
                 return NULL;
             }
 
-            char *dependencias[dfs->tam_f];                                         // Array para armazenar as dependências funcionais temporariamente
+            char *dependencias[dfs->tam_f];                                             // Array para armazenar as dependências funcionais temporariamente
             dependencias[0] = strtok(abre + 1, ",;}");
             for(int i = 0; i < dfs->tam_f && dependencias[i] != NULL; i++)
                 if(i+1 < dfs->tam_f) dependencias[i+1] = strtok(NULL, ",;}");
@@ -107,7 +108,7 @@ DFS* preencher_dfs(const char *arquivo){
             for(int i = 0; i < dfs->tam_f; i++){
                 Depend_func *df = malloc(sizeof(*df));
 
-                if(df == NULL){
+                if(!df){
                     fclose(fp);
                     free(dfs);
                     return NULL;
@@ -115,7 +116,7 @@ DFS* preencher_dfs(const char *arquivo){
 
                 char *lhs = strtok(dependencias[i], "->");
                 char *rhs = strtok(NULL, "->");
-                if (lhs == NULL || rhs == NULL) {
+                if(!lhs || !rhs){
                     free(df);
                     fclose(fp);
                     return NULL;
@@ -123,8 +124,9 @@ DFS* preencher_dfs(const char *arquivo){
 
                 df->lhs = duplicar_string(lhs);
                 df->rhs = duplicar_string(rhs);
-                if (df->lhs == NULL || df->rhs == NULL ||
-                    queue_add(dfs->f, df) != NOERROR) {
+
+                if(!df->lhs || !df->rhs || df->rhs == NULL ||
+                    queue_add(dfs->f, df) != NOERROR){
                     free(df->lhs);
                     free(df->rhs);
                     free(df);
@@ -135,25 +137,25 @@ DFS* preencher_dfs(const char *arquivo){
         }
     }
 
-    // Imprime o universo de atributos armazenado na estrutura DFS
-    printf("U = {");
-    for(size_t i = 0; i < strlen(dfs->u); i++){
-        if(i == strlen(dfs->u)-1) printf("%c}\n", dfs->u[i]);
-        else printf("%c,", dfs->u[i]);
-    } 
+    // // Imprime o universo de atributos armazenado na estrutura DFS
+    // printf("U = {");
+    // for(size_t i = 0; i < strlen(dfs->u); i++){
+    //     if(i == strlen(dfs->u)-1) printf("%c}\n", dfs->u[i]);
+    //     else printf("%c,", dfs->u[i]);
+    // } 
 
-    // Imprime as dependências funcionais armazenadas na fila
-    printf("F = {");
-    Depend_func *df = queue_head(dfs->f);
-    int primeira = 1;
+    // // Imprime as dependências funcionais armazenadas na fila
+    // printf("F = {");
+    // Depend_func *df = queue_head(dfs->f);
+    // int primeira = 1;
 
-    while(df != NULL){
-        if(!primeira) printf(", ");
-        printf("%s->%s", df->lhs, df->rhs);
-        primeira = 0;
-        df = queue_next(dfs->f);
-    }
-    printf("}\n");
+    // while(df != NULL){
+    //     if(!primeira) printf(", ");
+    //     printf("%s->%s", df->lhs, df->rhs);
+    //     primeira = 0;
+    //     df = queue_next(dfs->f);
+    // }
+    // printf("}\n");
 
     fclose(fp);
     return dfs;

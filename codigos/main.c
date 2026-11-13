@@ -11,7 +11,8 @@ int main(int argc, char *argv[]) {
         return ERROR;
     }
 
-    if(strcmp(argv[1], "closure") != 0 && strcmp(argv[1], "mincover") != 0 && strcmp(argv[1], "keys") != 0 && strcmp(argv[1], "normalform") != 0){
+    if(strcmp(argv[1], "closure") != 0 && strcmp(argv[1], "mincover") != 0 
+        && strcmp(argv[1], "keys") != 0 && strcmp(argv[1], "normalform") != 0){
         fprintf(stderr, "Comando desconhecido: %s\n", argv[1]);
         return ERROR;
     }
@@ -28,7 +29,7 @@ int main(int argc, char *argv[]) {
     }
 
     DFS *dfs = preencher_dfs(argv[3]);
-    if(dfs == NULL){
+    if(!dfs){
         fprintf(stderr, "Erro ao ler o arquivo de dependências funcionais.\n");
         return ERROR;
     }
@@ -40,6 +41,7 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "Erro ao calcular o fecho.\n");
             status = ERROR;
         } 
+
         else{
             printf("%s\n", fecho);
             free(fecho);
@@ -51,6 +53,15 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "Erro ao calcular a cobertura mínima.\n");
             status = ERROR;
         }
+
+        else{
+            Depend_func *df = queue_head(dfs->f);
+            while(df != NULL){
+                printf("%s->%s\n", df->lhs, df->rhs);
+                df = queue_next(dfs->f);
+            }
+        }
+        
     }
 
     else if(strcmp(argv[1], "keys") == 0){
@@ -58,7 +69,8 @@ int main(int argc, char *argv[]) {
         if(chaves == NULL){
             fprintf(stderr, "Erro ao calcular as chaves candidatas.\n");
             status = ERROR;
-        } 
+        }
+
         else{
             char* chave = queue_head(chaves);
             for(int i = 0; i < queue_size(chaves); i++){
@@ -71,7 +83,6 @@ int main(int argc, char *argv[]) {
     }
 
     else if(strcmp(argv[1], "normalform") == 0){
-        // Implementação da funcionalidade de normalform
         if(normalform(dfs) != NOERROR) {
             fprintf(stderr, "Erro ao calcular a forma normal.\n");
             status = ERROR;

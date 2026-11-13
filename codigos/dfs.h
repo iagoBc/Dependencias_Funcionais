@@ -3,6 +3,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+#include <stdio.h>
+
 #include "queue.h"
 
 
@@ -19,6 +22,7 @@ typedef struct {
 } DFS;
 
 
+// Função para preencher a estrutura DFS a partir de um arquivo
 DFS* preencher_dfs(const char *arquivo);
 
 

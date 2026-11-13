@@ -1,5 +1,4 @@
 #include "closure.h"
-#include "dfs.h"
 
 
 // Função para verificar se as letras do conjunto 'menor' estão todas presentes no conjunto 'maior'
