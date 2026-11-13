@@ -1,98 +1,168 @@
 #!/usr/bin/env python3
+"""
+Testa `./fdtool normalform --fds exemplos/NN_nome.fds` e compara a saída
+com `exemplos/NN_nome.expected.txt`.
 
-import os
-import subprocess
+Uso:
+    ./testar.py                  # roda todos os exemplos
+    ./testar.py 03 05            # roda só os que começam com 03 e 05
+    ./testar.py --ignorar-ordem  # ignora a ordem das linhas VIOLATION
+    ./testar.py --sem-make       # não roda o make antes
+"""
+
+import argparse
+import difflib
 import glob
+import os
 import re
+import subprocess
+import sys
+
 from rich.console import Console
 from rich.panel import Panel
 from rich.rule import Rule
+from rich.text import Text
 from rich.theme import Theme
 
-# Configuração de temas para o Rich
 tema = Theme({
     "info": "bold cyan",
     "sucesso": "bold green",
-    "erro": "bold red"
+    "erro": "bold red",
+    "aviso": "bold yellow",
 })
 console = Console(theme=tema)
 
 APP = "./fdtool"
 PASTA_EXEMPLOS = "exemplos"
+SUFIXO_ESPERADO = ".expected.txt"
+
 
 def extrair_numero(caminho_arquivo):
-    """Extrai o número do nome do ficheiro para ordenar corretamente (e4 antes de e10)"""
+    """Extrai o primeiro número do nome do arquivo para ordenar (02 antes de 10)."""
     nome = os.path.basename(caminho_arquivo)
-    match = re.search(r'\d+', nome)
+    match = re.search(r"\d+", nome)
     return int(match.group()) if match else 0
 
-def extrair_atributos(caminho_arquivo):
-    """Lê o ficheiro .fds e extrai os conjuntos do lado esquerdo das dependências."""
+
+def normalizar(texto, ignorar_ordem=False):
+    """
+    Deixa a saída comparável: remove espaços no fim de cada linha e linhas
+    em branco no fim (alguns .expected.txt não terminam com \\n).
+    Com ignorar_ordem, as linhas VIOLATION são ordenadas.
+    """
+    linhas = [l.rstrip() for l in texto.splitlines()]
+    while linhas and not linhas[-1]:
+        linhas.pop()
+
+    if ignorar_ordem:
+        cabecalho = [l for l in linhas if not l.startswith("VIOLATION")]
+        violacoes = sorted(l for l in linhas if l.startswith("VIOLATION"))
+        linhas = cabecalho + violacoes
+
+    return linhas
+
+
+def mostrar_diff(esperado, obtido):
+    """Imprime um diff colorido (vermelho = esperado/faltando, verde = obtido/extra)."""
+    saida = Text()
+    for linha in difflib.unified_diff(esperado, obtido,
+                                      fromfile="esperado", tofile="obtido",
+                                      lineterm=""):
+        if linha.startswith("+") and not linha.startswith("+++"):
+            saida.append(linha + "\n", style="green")
+        elif linha.startswith("-") and not linha.startswith("---"):
+            saida.append(linha + "\n", style="red")
+        elif linha.startswith("@@"):
+            saida.append(linha + "\n", style="cyan")
+        else:
+            saida.append(linha + "\n", style="dim")
+    console.print(Panel(saida, title="Diferença", border_style="red", expand=False))
+
+
+def testar_arquivo(arquivo_fds, ignorar_ordem):
+    """Retorna 'ok', 'falhou' ou 'sem_esperado'."""
+    base = os.path.splitext(arquivo_fds)[0]
+    arquivo_esperado = base + SUFIXO_ESPERADO
+
+    console.print(Rule(title=f"[bold blue]{os.path.basename(arquivo_fds)}[/bold blue]", style="blue"))
+
+    if not os.path.isfile(arquivo_esperado):
+        console.print(f"Arquivo esperado não encontrado: {arquivo_esperado}", style="aviso")
+        return "sem_esperado"
+
+    comando = [APP, "normalform", "--fds", arquivo_fds]
     try:
-        with open(caminho_arquivo, 'r', encoding='utf-8') as f:
-            conteudo = f.read()
-        match = re.search(r'F\s*=\s*\{([^}]*)\}', conteudo)
-        if match:
-            conjuntos_lhs = []
-            for dependencia in match.group(1).split(','):
-                lhs, separador, _ = dependencia.partition('->')
-                if separador:
-                    lhs = re.sub(r'\s+', '', lhs)
-                    if lhs and lhs not in conjuntos_lhs:
-                        conjuntos_lhs.append(lhs)
-            return conjuntos_lhs
+        resultado = subprocess.run(comando, capture_output=True, text=True, timeout=30)
+    except subprocess.TimeoutExpired:
+        console.print("FALHOU: o comando passou de 30s (timeout).", style="erro")
+        return "falhou"
     except Exception as e:
-        console.print(f"Erro ao ler os conjuntos LHS do ficheiro {caminho_arquivo}: {e}", style="erro")
-    return []
+        console.print(f"Erro crítico ao rodar o comando: {e}", style="erro")
+        return "falhou"
+
+    with open(arquivo_esperado, "r", encoding="utf-8") as f:
+        esperado = normalizar(f.read(), ignorar_ordem)
+    obtido = normalizar(resultado.stdout, ignorar_ordem)
+
+    if resultado.stderr.strip():
+        console.print(Panel(resultado.stderr.strip(), title="stderr", border_style="yellow", expand=False))
+
+    if esperado == obtido:
+        console.print("[sucesso]✔ OK[/sucesso]")
+        return "ok"
+
+    console.print("[erro]✘ FALHOU[/erro]")
+    mostrar_diff(esperado, obtido)
+    return "falhou"
+
 
 def main():
-    subprocess.run("make")
-    subprocess.run(["clear"])  # Limpa o terminal antes de iniciar os testes
-    if not os.path.isfile(APP) or not os.access(APP, os.X_OK):
-        console.print(f"Erro: Executável '{APP}' não encontrado ou sem permissão de execução.", style="erro")
-        return
+    parser = argparse.ArgumentParser(description="Compara a saída do fdtool normalform com os .expected.txt")
+    parser.add_argument("prefixos", nargs="*", help="prefixos dos exemplos a rodar (ex.: 03 05)")
+    parser.add_argument("--ignorar-ordem", action="store_true",
+                        help="ignora a ordem das linhas VIOLATION")
+    parser.add_argument("--sem-make", action="store_true", help="não roda o make antes")
+    args = parser.parse_args()
 
-    padrao = os.path.join(PASTA_EXEMPLOS, "e*.fds")
-    arquivos = glob.glob(padrao)
-    arquivos.sort(key=extrair_numero)
+    if not args.sem_make:
+        if subprocess.run(["make"]).returncode != 0:
+            console.print("Erro: o make falhou.", style="erro")
+            return 1
+
+    if not os.path.isfile(APP) or not os.access(APP, os.X_OK):
+        console.print(f"Erro: executável '{APP}' não encontrado ou sem permissão de execução.", style="erro")
+        return 1
+
+    padrao = os.path.join(PASTA_EXEMPLOS, "*.fds")
+    arquivos = sorted(glob.glob(padrao), key=extrair_numero)
+
+    if args.prefixos:
+        arquivos = [a for a in arquivos
+                    if any(os.path.basename(a).startswith(p) for p in args.prefixos)]
 
     if not arquivos:
-        console.print(f"Nenhum ficheiro encontrado no padrão {padrao}", style="erro")
-        return
+        console.print(f"Nenhum arquivo encontrado em {padrao}", style="erro")
+        return 1
+
+    contagem = {"ok": 0, "falhou": 0, "sem_esperado": 0}
+    reprovados = []
 
     for arquivo in arquivos:
-        console.print(Rule(title=f"[bold blue]ARQUIVO: {arquivo}[/bold blue]", style="blue"))
+        status = testar_arquivo(arquivo, args.ignorar_ordem)
+        contagem[status] += 1
+        if status == "falhou":
+            reprovados.append(os.path.basename(arquivo))
 
-        # Adiciona os testes fixos
-        comandos = [
-            ("MINCOVER", [APP, "mincover", "--fds", arquivo]),
-            ("KEYS", [APP, "keys", "--fds", arquivo]),
-            ("NORMALFORM", [APP, "normalform", "--fds", arquivo])
-        ]
+    console.print()
+    console.print(Rule(title="[bold]Resumo[/bold]", style="white"))
+    console.print(f"[sucesso]Passaram: {contagem['ok']}[/sucesso]  "
+                  f"[erro]Falharam: {contagem['falhou']}[/erro]  "
+                  f"[aviso]Sem .expected.txt: {contagem['sem_esperado']}[/aviso]")
+    if reprovados:
+        console.print("Reprovados: " + ", ".join(reprovados), style="erro")
 
-        # Extrai os atributos do ficheiro e gera um teste de fecho para cada um
-        atributos = extrair_atributos(arquivo)
-        for attr in atributos:
-            comandos.append((f"CLOSURE (Atributo '{attr}')", [APP, "closure", "--fds", arquivo, "--X", attr]))
+    return 0 if contagem["falhou"] == 0 and contagem["sem_esperado"] == 0 else 1
 
-        for nome_teste, comando in comandos:
-            console.print(f"\n[sucesso]>> Testando: {nome_teste}[/sucesso]")
-            
-            try:
-                resultado = subprocess.run(comando, capture_output=True, text=True)
-                
-                if resultado.stdout:
-                    console.print(Panel(resultado.stdout.strip(), title=f"Saída - {nome_teste}", border_style="green", expand=False))
-                
-                if resultado.stderr:
-                    console.print(Panel(resultado.stderr.strip(), title=f"Erro - {nome_teste}", border_style="red", expand=False))
-                    
-            except Exception as e:
-                console.print(f"Erro crítico ao tentar rodar o comando: {e}", style="erro")
-            
-        console.print("\n")
-
-    console.print(Rule(title="[bold green]Todos os testes foram concluídos![/bold green]", style="green"))
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
