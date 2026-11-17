@@ -130,11 +130,11 @@ F = {A->B; B->C; AB->D}
 
 As declarações `U` e `F` devem aparecer no arquivo para que ele seja lido
 corretamente. Os arquivos de exemplo em [`exemplos/`](./exemplos) mostram
-entradas válidas, como [`exemplos/e1.fds`](./exemplos/e1.fds):
+entradas válidas, como [`exemplos/06_rhs_multiplo.fds`](./exemplos/06_rhs_multiplo.fds):
 
 ```text
-U = {A,B,C,D,E}
-F = { A -> BC, C-> D, BD    ->E }
+U = {A,B,C,D}
+F = { A -> B, B -> CD }
 ```
 
 ## Sintaxe geral
@@ -154,9 +154,8 @@ Os comandos disponíveis são:
 | `keys` | Encontra as chaves candidatas | Nenhuma |
 | `normalform` | Verifica BCNF e 3FN | Nenhuma |
 
-Ao abrir um arquivo válido, o programa imprime no início o universo e as
-dependências que foram lidos. O resultado da operação aparece nas linhas
-seguintes.
+Ao abrir um arquivo válido, o programa imprime o resultado da operação
+solicitada.
 
 ## Operações
 
@@ -165,20 +164,20 @@ seguintes.
 Use `closure` com `--X` para informar o conjunto cujo fecho será calculado:
 
 ```bash
-./fdtool closure --fds exemplos/e1.fds --X A
+./fdtool closure --fds exemplos/06_rhs_multiplo.fds --X A
 ```
 
-Para o arquivo `e1.fds`, a saída final é:
+Para o arquivo `06_rhs_multiplo.fds`, a saída final é:
 
 ```text
-ABCDE
+ABCD
 ```
 
-Isso significa que `A+ = {A,B,C,D,E}` para as dependências fornecidas.
+Isso significa que `A+ = {A,B,C,D}` para as dependências fornecidas.
 Também é possível calcular o fecho de um conjunto:
 
 ```bash
-./fdtool closure --fds exemplos/e1.fds --X BD
+./fdtool closure --fds exemplos/06_rhs_multiplo.fds --X BD
 ```
 
 Todos os atributos informados em `--X` devem pertencer ao universo `U`. Um
@@ -191,7 +190,7 @@ Use `mincover` para transformar o conjunto de dependências em uma cobertura
 mínima:
 
 ```bash
-./fdtool mincover --fds exemplos/e1.fds
+./fdtool mincover --fds exemplos/06_rhs_multiplo.fds
 ```
 
 O algoritmo implementado:
@@ -209,7 +208,7 @@ Use `keys` para encontrar todos os conjuntos mínimos de atributos cujo fecho
 contém o universo:
 
 ```bash
-./fdtool keys --fds exemplos/e1.fds
+./fdtool keys --fds exemplos/03_3fn_ok_bcnf_nao.fds
 ```
 
 Cada chave candidata é impressa em uma linha. Uma chave que contém outra chave
