@@ -4,12 +4,12 @@
 # arquivos a compilar
 	HDR = $(wildcard codigos/*.h)			# headers
 	SRC = $(wildcard codigos/*.c)			# fontes C
-	OBJ = $(SRC:codigos/%.c=codigos/objetos/%.o)	# objetos .o
+	OBJ = $(SRC:codigos/%.c=codigos/%.o)	# objetos .o
 	CC = gcc
 	CFLAGS = -std=c11 -Wall -Wextra
 .PHONY: all clean purge
 
-codigos/objetos/%.o: codigos/%.c $(HDR)
+codigos/%.o: codigos/%.c $(HDR)
 	mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
@@ -19,7 +19,7 @@ $(PROG): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ 
 	
 clean:
-	@rm -f *~ *.o codigos/*.o codigos/objetos/*.o
+	@rm -f *~ *.o codigos/*.o codigos/*.o
 
 purge:  clean
 	@rm -f $(PROG)
@@ -27,4 +27,4 @@ purge:  clean
 # gera arquivo .tar.gz para entrega
 tgz: purge
 	-rm -f $(TGZ)
-	-tar --ignore-failed-read -czvf $(TGZ) codigos/ exemplos/ makefile relatorio.pdf
+	-tar --ignore-failed-read -czvf $(TGZ) codigos/ exemplos/ makefile relatorio.pdf README.md
