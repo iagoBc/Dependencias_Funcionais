@@ -1,6 +1,7 @@
 #include "queue.h"
 
 
+// Função para criar uma fila
 struct queue_t *queue_create(){
     queue_t *fila = (queue_t*) malloc(sizeof(queue_t));                         // Aloca dinamicamente memoria para struct
 
@@ -16,6 +17,7 @@ struct queue_t *queue_create(){
 }
 
 
+// Função para destruir a fila
 int queue_destroy(struct queue_t *queue){
     if(!queue) return ERROR;
     
@@ -33,6 +35,7 @@ int queue_destroy(struct queue_t *queue){
 }
 
 
+// Função para adicionar um item na fila
 int queue_add(struct queue_t *queue, void *item){
     if(!queue || !item) return ERROR;                                           // Retorna ERROR se a fila ou item nao existe
 
@@ -57,6 +60,7 @@ int queue_add(struct queue_t *queue, void *item){
 }
 
 
+// Função para deletar um item da fila
 int queue_del(struct queue_t *queue, void *item){
     if(!queue || !item) return ERROR;                                           // Retorna ERROR se a fila ou item nao existe
 
@@ -85,12 +89,14 @@ int queue_del(struct queue_t *queue, void *item){
 }
 
 
+// Função para retornar o tamanho da fila
 int queue_size(struct queue_t *queue){
     if(!queue) return ERROR; 
     else return queue->tam;
 }
 
 
+// Função para retornar o item da cabeca da fila e colocar o iterador na cabeca
 void *queue_head(struct queue_t *queue){
     if (!queue || !queue->head) return NULL;                                    // Retorna ERROR se a fila ou item nao existe
 
@@ -100,6 +106,7 @@ void *queue_head(struct queue_t *queue){
 }
 
 
+// Função para retornar o item apontado pelo iterador e avançar o iterador para o proximo no
 void *queue_next(struct queue_t *queue){
     if (!queue || !queue->it) return NULL;                                      // Retorna ERROR se a fila ou item nao existe
 

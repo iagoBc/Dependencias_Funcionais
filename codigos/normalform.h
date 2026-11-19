@@ -5,6 +5,7 @@
 #include "keys.h"
 #include "mincover.h"
 
+
 // Função para calcular a forma normal de um conjunto de dependências funcionais
 int normalform(DFS *dfs);
 

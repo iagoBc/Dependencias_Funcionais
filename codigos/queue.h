@@ -25,31 +25,30 @@ typedef struct queue_t{
 } queue_t;
 
 
-// Cria uma fila inicialmente vazia.
+// Função para criar uma fila
 struct queue_t *queue_create();
 
-
-// Destroi uma fila, liberando a memória alocada por ela.
+// Função para destruir a fila
 int queue_destroy(struct queue_t *queue);
 
 
-// Adiciona um item no fim da fila.
+// Função para adicionar um item na fila
 int queue_add(struct queue_t *queue, void *item);
 
 
-// Retira da fila o item com o valor indicado.
+// Função para deletar um item da fila
 int queue_del(struct queue_t *queue, void *item);
 
 
-// Informa o número de itens na fila.
+// Função para retornar o tamanho da fila
 int queue_size(struct queue_t *queue);
 
 
-// Põe o iterador no início da fila.
+// Função para retornar o item da cabeca da fila e colocar o iterador na cabeca
 void *queue_head(struct queue_t *queue);
 
 
-// Avança o iterador ao próximo item na fila.
+// Função para retornar o item apontado pelo iterador e avançar o iterador para o proximo no
 void *queue_next(struct queue_t *queue);
 
 

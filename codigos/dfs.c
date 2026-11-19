@@ -2,7 +2,7 @@
 
 
 // Função auxiliar para duplicar uma string
-static char *duplicar_string(const char *origem) {
+char *duplicar_string(const char *origem) {
     size_t tamanho = strlen(origem) + 1;
     char *copia = malloc(tamanho);
 
