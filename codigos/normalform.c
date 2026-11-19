@@ -10,6 +10,8 @@ int trivial(Depend_func *df){
 // Função para calcular a forma normal de um conjunto de dependências funcionais
 int normalform(DFS *dfs){
     queue_t* chaves = keys(dfs);                                                                // Calcula as chaves candidatas
+    if(!chaves) return ERROR;
+    
     if(decompor_rhs(dfs) != NOERROR) return ERROR;                                              // Decompor o lado direito das dependências funcionais em dependências unitárias
 
     chaves->tam--;
@@ -91,5 +93,7 @@ int normalform(DFS *dfs){
         no = no->prox;
     }
 
+    free(primos);
+    
     return NOERROR;
 }

@@ -106,34 +106,38 @@ DFS* preencher_dfs(const char *arquivo){
             
 
             for(int i = 0; i < dfs->tam_f; i++){
-                Depend_func *df = malloc(sizeof(*df));
+                char *seta = strstr(dependencias[i], "->");                             // Procura a seta "->" na dependência funcional atual
+                if(!seta){
+                    fclose(fp);
+                    return NULL;
+                }
 
+                *seta = '\0';                                                           // Substitui a seta por um caractere nulo para separar o lado esquerdo e direito da dependência funcional
+                char *lhs = dependencias[i];                                            // Lado esquerdo da dependência funcional
+                char *rhs = seta + 2;                                                   // Lado direito da dependência funcional    
+
+                if(*lhs == '\0' || *rhs == '\0'){
+                    fclose(fp);
+                    return NULL;
+                }
+
+                Depend_func *df = malloc(sizeof(*df));
                 if(!df){
                     fclose(fp);
-                    free(dfs);
                     return NULL;
                 }
 
-                char *lhs = strtok(dependencias[i], "->");
-                char *rhs = strtok(NULL, "->");
-                if(!lhs || !rhs){
-                    free(df);
-                    fclose(fp);
-                    return NULL;
-                }
-
-                df->lhs = duplicar_string(lhs);
+                df->lhs = duplicar_string(lhs);                                        
                 df->rhs = duplicar_string(rhs);
 
-                if(!df->lhs || !df->rhs || df->rhs == NULL ||
-                    queue_add(dfs->f, df) != NOERROR){
+                if(!df->lhs || !df->rhs || queue_add(dfs->f, df) != NOERROR){
                     free(df->lhs);
                     free(df->rhs);
                     free(df);
                     fclose(fp);
                     return NULL;
                 }
-            } 
+            }
         }
     }
 

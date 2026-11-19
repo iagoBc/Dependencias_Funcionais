@@ -36,24 +36,22 @@ char* closure(DFS *dfs, const char *atrib_x){
     
     do{
         mudou = 0;
-        Depend_func *dependencia = queue_head(dfs->f);                      
-        while(dependencia != NULL){
-            if(contem_todos(fecho, dependencia->lhs)){                          // Verifica se todos os atributos do lado esquerdo da dependência funcional estão presentes no fecho
-                // Adiciona apenas os caracteres do RHS que ainda não estão no fecho
+        No *no = dfs->f->head;
+        while(no != NULL){
+            Depend_func *dependencia = no->dado;
+            if(contem_todos(fecho, dependencia->lhs)){                          // Se o lado esquerdo da dependência funcional estiver contido no fecho, adiciona os atributos do lado direito ao fecho
                 for(int i = 0; dependencia->rhs[i] != '\0'; i++){
-                    if(!strchr(fecho, dependencia->rhs[i])){                    // Verifica se o caractere do RHS já está presente no fecho
-                        size_t tam = strlen(fecho);                             
-                        fecho[tam] = dependencia->rhs[i];                       // Adiciona o caractere do RHS ao final do fecho
+                    if(!strchr(fecho, dependencia->rhs[i])){
+                        size_t tam = strlen(fecho);
+                        fecho[tam] = dependencia->rhs[i];
                         fecho[tam + 1] = '\0';
-                        mudou = 1;      
+                        mudou = 1;
                     }
                 }
             }
-            dependencia = queue_next(dfs->f);
+            no = no->prox;
         }
-    } while(mudou);                                                             // Repete o processo até que não haja mais mudanças no fecho
-
-
+    } while(mudou);                                                             // Continua até que não haja mais mudanças no fecho                                
 
     qsort(fecho, strlen(fecho), sizeof(char), comparar_atributos);
     return fecho;

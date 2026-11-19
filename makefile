@@ -10,7 +10,6 @@
 .PHONY: all clean purge
 
 codigos/%.o: codigos/%.c $(HDR)
-	mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 all: $(PROG)
