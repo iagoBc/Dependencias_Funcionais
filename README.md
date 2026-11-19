@@ -52,7 +52,7 @@ O `makefile`:
 
 1. localiza os arquivos `.c` em [`codigos/`](./codigos);
 2. compila cada fonte com `-std=c11 -Wall -Wextra`;
-3. grava os arquivos objeto em `codigos/objetos/`;
+3. grava os arquivos objeto diretamente em [`codigos/`](./codigos);
 4. gera o executável `fdtool` na raiz do projeto.
 
 Para recompilar sem reaproveitar os arquivos objeto:
@@ -174,6 +174,8 @@ ABCD
 ```
 
 Isso significa que `A+ = {A,B,C,D}` para as dependências fornecidas.
+Ao final do cálculo, os atributos do fecho são ordenados em ordem alfabética
+com `qsort`.
 Também é possível calcular o fecho de um conjunto:
 
 ```bash
@@ -200,7 +202,8 @@ O algoritmo implementado:
 3. remove dependências redundantes.
 
 As dependências que permanecem são impressas uma por linha. A ordem pode
-depender da ordem das dependências no arquivo de entrada.
+depender da ordem das dependências no arquivo de entrada. Ao finalizar,
+a cobertura é ordenada pelo lado esquerdo e, em seguida, pelo lado direito.
 
 ### Chaves candidatas
 
@@ -213,6 +216,9 @@ contém o universo:
 
 Cada chave candidata é impressa em uma linha. Uma chave que contém outra chave
 já encontrada não é impressa, pois não é mínima.
+Antes da enumeração das combinações, o programa identifica os atributos que
+não aparecem em nenhum RHS: esses atributos são obrigatórios em toda chave
+candidata e combinações que não os contenham são descartadas.
 
 O programa testa combinações de atributos; por isso, o custo e o uso de
 memória crescem conforme aumenta o número de atributos do universo.
@@ -239,8 +245,14 @@ VIOLATION BCNF: C->D (C not superkey)
 VIOLATION 3NF: C->D (D not prime, C not superkey)
 ```
 
-Se nenhuma violação for encontrada, o programa não imprime linhas de
-violação após a representação de `U` e `F`.
+Se nenhuma violação for encontrada, o programa imprime apenas:
+
+```text
+BCNF: OK
+3NF: OK
+```
+
+Não são impressas novamente as representações de `U` e `F`.
 
 ## Exemplos de execução
 
@@ -284,8 +296,8 @@ Para inspecionar um erro sem misturar a saída normal:
 └── fdtool                 # Executável gerado por make
 ```
 
-Os arquivos em `codigos/objetos/` são intermediários e podem ser apagados com
-`make clean`. O executável `fdtool` também é um artefato de compilação e pode
+Os arquivos objeto diretamente em `codigos/` são intermediários e podem ser
+apagados com `make clean`. O executável `fdtool` também é um artefato de compilação e pode
 ser recriado a qualquer momento com `make`.
 
 ## Erros comuns
