@@ -14,12 +14,6 @@ int normalform(DFS *dfs){
     
     if(decompor_rhs(dfs) != NOERROR) return ERROR;                                              // Decompor o lado direito das dependências funcionais em dependências unitárias
 
-    chaves->tam--;
-    if(!chaves){
-        fprintf(stderr, "Erro ao calcular as chaves candidatas.\n");
-        return ERROR;
-    }
-
     char *primos = malloc(strlen(dfs->u) + 1);
     if(!primos){
         fprintf(stderr, "Erro ao alocar memória para os atributos primos.\n");
