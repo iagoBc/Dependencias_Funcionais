@@ -1,6 +1,6 @@
 # PROGRAMA
     PROG = fdtool
-
+	TGZ = iago_20244409.tar.gz
 # arquivos a compilar
 	HDR = $(wildcard codigos/*.h)			# headers
 	SRC = $(wildcard codigos/*.c)			# fontes C
@@ -22,4 +22,9 @@ clean:
 	@rm -f *~ *.o codigos/*.o codigos/objetos/*.o
 
 purge:  clean
-	@rm -f $(PROG) 
+	@rm -f $(PROG)
+
+# gera arquivo .tar.gz para entrega
+tgz: purge
+	-rm -f $(TGZ)
+	-tar --ignore-failed-read -czvf $(TGZ) codigos/ exemplos/ makefile relatorio.pdf
